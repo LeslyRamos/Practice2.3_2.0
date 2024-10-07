@@ -1,0 +1,68 @@
+---
+title: "Practice2.3"
+author: "Lesly"
+date: "2024-10-07"
+output: html_document
+---
+
+# Practice 2.3
+
+## Data specifications: It contains data on 8 days length of Easter grass exposed to different treatments. The 6 variables day3 to day8 are the mean length of the grass on the respective day. germinate is the number of germinated seeds.bed is a factor with four levels (mould1,mould2, paper4, paper8) indicating where the grass grew and how thick it was. treatment has two levels water and nutrient indicating the irrigation scheme (pure water or enriched with nutrients). spatial1 and spatial2 are the vertical and horizontal position of the plot respectively. The variables row and column are meaningless and should be removed.
+
+```{r}
+grass<-read.table('rairuoho.txt', header=T, sep='\t', dec='.')
+grass
+```
+
+
+
+### Change "nutrient" for "enriched". Update the table grass
+
+```{r}
+grass <- grass %>%
+     mutate(treatment = ifelse(treatment == "nutrient", "enriched", treatment))
+grass
+```
+
+
+
+### Reformat the table so that the day is as a single variable (factor) with 6 levels (day3, day4, day5, day6, day7, day8). 
+### Another variable length is created to get the length of the grass on the given day.
+
+```{r}
+grass <- grass %>%
+  pivot_longer(cols = starts_with("day"), 
+               names_to = "day", 
+               values_to = "length")
+grass
+```
+
+
+
+### The variables Spatial1 and Spatial2 are merged to obtain the following format for the spatial coordinates of an observation upper_left. 
+```{r}
+grass <- grass %>%
+  unite(spatial, spatial1, spatial2, sep = "_")
+```
+
+
+
+### Remove the variables row and column.
+```{r}
+grass2<-dplyr::select(grass, -row, -column)
+grass2
+```
+
+
+
+
+### Reorder the columns on the table, I moved "day" and "length" at the beginning of the table.
+```{r}
+grass2 <- grass2 %>%
+  select(day, length, everything())
+grass2
+```
+
+
+
+
